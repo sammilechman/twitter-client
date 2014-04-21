@@ -32,6 +32,15 @@ group :doc do
   gem 'sdoc', require: false
 end
 
+gem 'oauth'
+
+gem 'pry-rails'
+
+gem 'annotate'
+
+gem 'launchy'
+
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
 

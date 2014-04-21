@@ -18,3 +18,4 @@
 #Ignore our consumer key and secret
 /lib/consumer_key
 /lib/consumer_secret
+/access_token.yml
