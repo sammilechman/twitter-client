@@ -14,3 +14,7 @@
 # Ignore all logfiles and tempfiles.
 /log/*.log
 /tmp
+
+#Ignore our consumer key and secret
+/lib/consumer_key
+/lib/consumer_secret
