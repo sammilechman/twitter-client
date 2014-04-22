@@ -1,6 +1,7 @@
 require 'oauth'
 require 'yaml'
 require 'launchy'
+require 'json'
 
 
 class TwitterSession
@@ -13,13 +14,20 @@ class TwitterSession
   CONSUMER_KEY, CONSUMER_SECRET, :site => "https://twitter.com")
 
   def self.get(path, query_values)
-    access_token
-    path_to_url(path, query_values)
+    url = path_to_url(path, query_values)
+    response = access_token
+      .get(url)
+      .body
+    JSON.parse(response).each do |post|
+      puts post["text"]
+    end
   end
 
   def self.post(path, req_params)
-    access_token
-    path_to_url(path, req_params)
+    url = path_to_url(path, req_params)
+    response = access_token
+      .post(url)
+      .body
   end
 
   def self.access_token
@@ -29,10 +37,8 @@ class TwitterSession
     else
       access_token = request_access_token
       File.open(TOKEN_FILE, "w") { |f| YAML.dump(access_token, f) }
-
       access_token
     end
-
   end
 
   def self.request_access_token
@@ -49,32 +55,25 @@ class TwitterSession
     access_token = request_token.get_access_token(
       :oauth_verifier => oauth_verifier
     )
-    response = access_token
-      .get("https://api.twitter.com/1.1/statuses/user_timeline.json")
-      .body
   end
 
   def self.path_to_url(path, query_values = nil)
-    # All Twitter API calls are of the format
-    # "https://api.twitter.com/1.1/#{path}.json". Use
-    # `Addressable::URI` to build the full URL from just the
-    # meaningful part of the path (`statuses/user_timeline`)
     Addressable::URI.new(
     :scheme => "https",
-    :host => "api.twitter.com/1.1",
-    :path => path,
+    :host => "api.twitter.com",
+    :path => "1.1/#{path}.json",
     :query_values => query_values
-
-    )
+    ).to_s
   end
 
 end
 
-# TwitterSession.get(
+# a = TwitterSession.get(
 #   "statuses/user_timeline",
-#   { :user_id => "737657064" }
+#   { :username => "sam_el_lechero" }
 # )
+
 # TwitterSession.post(
 #   "statuses/update",
-#   { :status => "New Status!" }
+#   { :status => "App Academy!" }
 # )
